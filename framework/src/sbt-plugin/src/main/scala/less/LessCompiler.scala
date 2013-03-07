@@ -78,10 +78,20 @@ object LessCompiler {
                         context.push(imported);
                         dependencies.push(imported);
 
+			            var rootpath = env.rootpath;
+			            var j = path.lastIndexOf('/');
+
+			            if(env.relativeUrls && !/^(?:[a-z-]+:|\/)/.test(path) && j != -1) {
+				            rootpath = rootpath + path.slice(0, j+1);
+			            }
+
                         new(window.less.Parser)({
                             optimization:3,
                             filename:importedName,
                             contents:env.contents,
+                            syncImport: env.syncImport,
+                            relativeUrls: env.relativeUrls,
+                            rootpath: rootpath,
                             dumpLineNumbers:window.less.dumpLineNumbers
                         }).parse(input, function (e, root) {
                             if(e instanceof Object) {
@@ -93,7 +103,7 @@ object LessCompiler {
                         });
                     }
 
-                    new(window.less.Parser)({optimization:3, filename:String(source.getCanonicalPath())}).parse(String(LessCompiler.readContent(source)), function (e,root) {
+                    new(window.less.Parser)({rootpath:'./', relativeUrls:true, optimization:3, filename:String(source.getCanonicalPath())}).parse(String(LessCompiler.readContent(source)), function (e,root) {
                         if(e instanceof Object) {
                             throw e;
                         }
