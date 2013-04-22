@@ -95,6 +95,8 @@ trait PlaySettings {
 
     distExcludes := Seq.empty,
 
+    javacOptions in (Compile, doc) := List("-encoding", "utf8"),
+
     libraryDependencies <+= (playPlugin) { isPlugin =>
       val d = "play" %% "play" % play.core.PlayVersion.current
       if(isPlugin)
@@ -127,7 +129,7 @@ trait PlaySettings {
     sourceGenerators in Compile <+= (state, sourceDirectory in Compile, sourceManaged in Compile, templatesTypes, templatesImport) map ScalaTemplates,
 
     // Adds app directory's source files to continuous hot reloading
-    watchSources <++= baseDirectory map { path => ((path / "app") ** "*").get },
+    watchSources <++= baseDirectory map { path => ((path / "app") ** "*" --- (path / "app/assets") ** "*").get },
 
     commands ++= Seq(shCommand, playCommand, playRunCommand, playStartCommand, h2Command, classpathCommand, licenseCommand, computeDependenciesCommand),
 
