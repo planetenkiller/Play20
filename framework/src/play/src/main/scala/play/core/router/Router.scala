@@ -8,6 +8,7 @@ import scala.util.parsing.input._
 import scala.util.parsing.combinator._
 import scala.util.matching._
 import java.net.URI
+import java.net.URLDecoder
 import scala.util.control.Exception
 
 trait PathPart
@@ -35,7 +36,7 @@ case class PathPattern(parts: Seq[PathPart]) {
   private def decodeIfEncoded(decode: Boolean, groupCount: Int): Matcher => Either[Throwable, String] = matcher =>
     Exception.allCatch[String].either {
       if(decode)
-         new URI(matcher.group(groupCount)).getPath
+         URLDecoder.decode(matcher.group(groupCount), "utf-8")
       else
         matcher.group(groupCount)
     }
